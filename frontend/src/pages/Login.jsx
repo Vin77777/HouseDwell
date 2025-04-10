@@ -1,14 +1,50 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
+import axios from "axios";
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const [formData, setFormData] = useState({
+    email:"",
+    password: "",
+  });
+  
+  const [backendMessage,setbackendMessage] = useState(null)
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Email:", email);
-    console.log("Password:", password);
-    // Add authentication logic here
+    console.log("Email:", formData.email);
+    console.log("Password:", formData.password);
+    console.log(formData);
+  
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/v1/users/login",
+        formData,{
+          withCredentials:true,
+        }
+      );
+  
+      const data = response.data; // axios parses the JSON for you
+      console.log(data);
+  
+      if (data.success) {
+        console.log(data.message);
+        alert(data.message);
+        navigate("/");
+      } else {
+        console.error("Login failed");
+        setbackendMessage(data.message);
+        alert("Signup failed");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Server error");
+    }
   };
 
   return (
@@ -20,9 +56,10 @@ const Login = () => {
             <label className="block text-gray-700">Email</label>
             <input
               type="email"
+              name="email"
               className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleChange}
               required
             />
           </div>
@@ -30,9 +67,10 @@ const Login = () => {
             <label className="block text-gray-700">Password</label>
             <input
               type="password"
+              name="password"
               className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleChange}
               required
             />
           </div>

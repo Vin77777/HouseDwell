@@ -4,45 +4,41 @@ import { FaMapMarkerAlt } from "react-icons/fa";
 const PricePrediction = () => {
   const [formData, setFormData] = useState({
     location: "",
-    propertyType: "",
     area: "",
     BHK: "",
-    bathrooms: "",
+    amenities: [], 
   });
 
   const [predictedPrice, setPredictedPrice] = useState(null);
 
 
-//   const amenitiesList = [
-//     "Air Conditioning",
-//     "Parking",
-//     "Swimming Pool",
-//     "Gym",
-//     "Balcony",
-//     "Furnished",
-//     "Garden",
-//     "Security System",
-//     "Elevator",
-//   ];
+  const amenitiesList = [
+    "Parking",
+    "Gym",
+  ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-//   const handleAmenityToggle = (amenity) => {
-//     setFormData((prev) => ({
-//       ...prev,
-//       amenities: prev.amenities.includes(amenity)
-//         ? prev.amenities.filter((item) => item !== amenity)
-//         : [...prev.amenities, amenity],
-//     }));
-//   };
+  const handleAmenityToggle = (amenity) => {
+    setFormData((prev) => ({
+      ...prev,
+      amenities: prev.amenities.includes(amenity)
+        ? prev.amenities.filter((item) => item !== amenity)
+        : [...prev.amenities, amenity],
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Submitting Data:", formData);
-
+    if (!formData.location || !formData.area || !formData.BHK) {
+      alert("Please fill in all required fields");
+      return;
+    }
+    
     try {
       const response = await fetch("http://localhost:5000/predict", {
         method: "POST",
@@ -51,8 +47,8 @@ const PricePrediction = () => {
       });
 
       const result = await response.json();
-      if(result.sucess){
-        // setPredictedPrice(result.price)
+      if(result.success){
+        setPredictedPrice(result.price)
       }else{
         alert("error in predicting the price")
       }
@@ -87,22 +83,7 @@ const PricePrediction = () => {
             />
           </div>
 
-          {/* Property Type */}
-          <select
-            name="propertyType"
-            value={formData.propertyType}
-            onChange={handleInputChange}
-            className="w-full border p-2 rounded-md"
-          >
-            <option value="">Select property type</option>
-            <option value="Apartment">Apartment</option>
-            <option value="House">House</option>
-            <option value="Villa">Villa</option>
-            <option value="Studio">Studio</option>
-            <option value="Penthouse">Penthouse</option>
-          </select>
-
-          {/* Area, Bedrooms, Bathrooms */}
+          {/* Area, Bedrooms */}
           <div className="grid grid-cols-1 gap-4">
             <label htmlFor="area">Area</label>
             <input
@@ -129,23 +110,10 @@ const PricePrediction = () => {
               <option value="5">5+ BHK</option>
             </select>
 
-            <label htmlFor="bathrooms">Bathrooms</label>
-            <select
-              name="bathrooms"
-              value={formData.bathrooms}
-              onChange={handleInputChange}
-              className="border p-2 rounded-md cursor-pointer"
-            >
-              <option value="">No.of Bathrooms</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4+</option>
-            </select>
           </div>
 
           {/* Amenities */}
-          {/* <div>
+          <div>
             <h3 className="font-semibold mb-2">Amenities</h3>
             <div className="grid grid-cols-3 gap-2">
               {amenitiesList.map((amenity) => (
@@ -159,7 +127,7 @@ const PricePrediction = () => {
                 </label>
               ))}
             </div>
-          </div> */}
+          </div>
 
           {/* Submit Button */}
           <button

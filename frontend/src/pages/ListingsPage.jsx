@@ -52,8 +52,8 @@ const ListingsPage = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block font-medium">Property Type</label>
-            {["Apartment", "House", "Villa", "Studio", "Penthouse"].map((type) => (
+            <label className="block font-medium">Required Facilities </label>
+            {["Gym","Parking"].map((type) => (
               <div key={type} className="flex items-center gap-2">
                 <input type="checkbox" />
                 <span>{type}</span>

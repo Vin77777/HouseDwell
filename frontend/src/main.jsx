@@ -10,6 +10,7 @@ import ListingsPage from './pages/ListingsPage';
 import PricePrediction from './pages/PricePrediction';
 import About from './pages/About'
 import Contact from './pages/Contact';
+import UserProfile from './pages/UserProfile.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -21,6 +22,7 @@ const router = createBrowserRouter(
         <Route path="/contact" element={<Contact/>}/>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/profile" element={<UserProfile />} />
       </Route>  
   )
 )

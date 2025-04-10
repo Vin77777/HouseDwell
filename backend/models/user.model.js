@@ -3,13 +3,33 @@ import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
   {
-    name: String,
-    email: String,
-    password: String,
+    username:{
+      type:String,
+      required:true,
+      unique:true,
+      trim:true,
+    },
+    email: {
+      type:String,
+      required:true,
+      unique:true,
+      trim:true,
+    },
+    password: {
+      type:String,
+      required:true,
+      unique:true,
+      trim:true,
+    },
     role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
+    },
+    profilePic:{
+      type:String,
+      default:"",
+
     },
     isVerified: {
       type: Boolean,
@@ -40,3 +60,5 @@ userSchema.pre("save", async function (next) {
 const User = mongoose.model("User", userSchema);
 
 export default User;
+
+
