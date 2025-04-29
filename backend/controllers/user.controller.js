@@ -8,24 +8,25 @@ import dotenv from "dotenv";
 dotenv.config()
 
 const registerUser = async (req, res) => {
-  const { username, email, password } = req.body;
-  if (!username || !email || !password)
-    return res.status(500).json({
+  const { username, email, password, role } = req.body;
+  if (!username || !email || !password || !role)
+    return res.status(400).json({
       success: false,
-      message: "all fields are required",
+      message: "All fields are required",
     });
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser)
-      return res.json({
+      return res.status(400).json({
         success: false,
-        message: "user already exist",
+        message: "User already exists",
       });
 
     const user = await User.create({
       username,
       email,
       password,
+      role, // Added role here
     });
 
     if (!user) {
@@ -34,79 +35,21 @@ const registerUser = async (req, res) => {
         message: "User not registered",
       });
     }
+
     const token = crypto.randomBytes(32).toString("hex");
-    console.log(token);
     user.verificationToken = token;
 
     await user.save();
-    console.log(user);
-    //send email
-    // const transporter = nodemailer.createTransport({
-    //   service: "gmail",
-    //   secure: false, // true for port 465, false for other ports
-    //   auth: {
-    //     user: process.env.MAILTRAP_USERNAME,
-    //     pass: process.env.MAILTRAP_PASSWORD,
-    //   },
-    // });
-
-    // const mailOption = {
-    //   from: process.env.MAILTRAP_SENDEREMAIL,
-    //   to: user.email,
-    //   subject: "Verify your email", // Subject line
-    //   text: `Please click on the following link:
-    //   ${process.env.BASE_URL}/api/users/verify/${token}
-    //   `,
-    // };
-
-    // await transporter.sendMail(mailOption);
 
     return res.status(201).json({
       success: true,
       message: "User registered successfully",
     });
   } catch (error) {
-    return res.status(400).json({
+    console.error("Registration error:", error);
+    return res.status(500).json({
       success: false,
-      message: "User not registered ",
-      error,
-    });
-  }
-};
-
-const verifyUser = async (req, res) => {
-  const { token } = req.params;
-  console.log(token);
-  if (!token) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid token",
-    });
-  }
-  try {
-    console.log("verification started");
-
-    const user = await User.findOne({ verificationToken: token });
-
-    if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid token",
-      });
-    }
-    user.isVerified = true;
-    user.verificationToken = undefined;
-    await user.save();
-
-    res.status(200).json({
-      success: true,
-      message: "User verified successfully",
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: "User not verified",
-      error,
+      message: "Server error during registration",
     });
   }
 };
@@ -139,7 +82,7 @@ const login = async (req, res) => {
       });
     }
 
-    // ✅ Include role and other info in token
+    // Include role and other info in token
     const token = jwt.sign(
       {
         id: user._id,
@@ -251,4 +194,4 @@ const logout = async (req, res) => {
   }
 };
 
-export { registerUser, verifyUser, login, userProfile,userUpdate, logout };
+export { registerUser, login, userProfile,userUpdate, logout };

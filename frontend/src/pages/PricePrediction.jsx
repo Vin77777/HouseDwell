@@ -1,21 +1,18 @@
 import { useState } from "react";
 import { FaMapMarkerAlt } from "react-icons/fa";
+import axios from "axios";
 
 const PricePrediction = () => {
   const [formData, setFormData] = useState({
     location: "",
     area: "",
     BHK: "",
-    amenities: [], 
+    amenities: [],
   });
 
   const [predictedPrice, setPredictedPrice] = useState(null);
 
-
-  const amenitiesList = [
-    "Parking",
-    "Gym",
-  ];
+  const amenitiesList = ["Parking", "Gym"];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -33,28 +30,24 @@ const PricePrediction = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting Data:", formData);
     if (!formData.location || !formData.area || !formData.BHK) {
       alert("Please fill in all required fields");
       return;
     }
-    
+    console.log(formData);
     try {
-      const response = await fetch("http://localhost:5000/predict", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+      const response = await axios.post("http://localhost:3000/api/v1/user/predict", formData,{
+        withCredentials:true,
       });
-
-      const result = await response.json();
-      if(result.success){
-        setPredictedPrice(result.price)
-      }else{
-        alert("error in predicting the price")
+      if (response.data.success) {
+        setPredictedPrice(response.data.price);
+      } else if(!response.data.success){
+        console.log(response.data.message);
+        alert(response.data.message);
       }
-    
     } catch (error) {
       console.error("Prediction Error:", error);
+      alert("Server error");
     }
   };
 

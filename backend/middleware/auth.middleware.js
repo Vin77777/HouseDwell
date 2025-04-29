@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 
+// ✅ Check if user is logged in
 const isLoggedIn = (req, res, next) => {
   try {
     const token = req.cookies?.token;
@@ -9,13 +10,14 @@ const isLoggedIn = (req, res, next) => {
       console.log("No token found in cookies.");
       return res.status(401).json({
         success: false,
-        message: "Authentication failed. Token missing.",
+        message: "Authentication failed",
       });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("Decoded token data:", decoded);
-    req.user = decoded;
+
+    req.user = decoded; // attaching user info to req.user
 
     next();
   } catch (error) {
@@ -27,4 +29,17 @@ const isLoggedIn = (req, res, next) => {
   }
 };
 
-export { isLoggedIn };
+// ✅ Check user role
+const authorizeRoles = (...allowedRoles) => {
+  return (req, res, next) => {
+    if (!allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: `Role (${req.user.role}) is not authorized to access this resource.`,
+      });
+    }
+    next();
+  };
+};
+
+export { isLoggedIn, authorizeRoles };
