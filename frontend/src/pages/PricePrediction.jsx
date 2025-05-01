@@ -144,16 +144,8 @@ const PricePrediction = () => {
           {/* Low, Avg, High Estimate */}
           <div className="flex justify-center space-x-6 mt-4 text-gray-700">
             <div>
-              <p className="font-semibold">₹330,000</p>
-              <p className="text-sm">Low Estimate</p>
-            </div>
-            <div>
               <p className="font-semibold">₹{predictedPrice.toLocaleString()}</p>
               <p className="text-sm">Average</p>
-            </div>
-            <div>
-              <p className="font-semibold">₹370,000</p>
-              <p className="text-sm">High Estimate</p>
             </div>
           </div>
 

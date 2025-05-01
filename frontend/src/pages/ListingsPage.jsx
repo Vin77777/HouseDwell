@@ -1,30 +1,44 @@
-// Responsive Listings Page with Filtering and Sorting
 import { useState, useEffect } from "react";
-import { FiSearch, FiList, FiGrid } from "react-icons/fi";
+import { FiList, FiGrid } from "react-icons/fi";
+import axios from "axios";
 import PropertyCard from "../components/PropertyCard";
-
-// Mock data
-const properties = Array.from({ length: 20 }, (_, i) => ({
-  id: i + 1,
-  title: `Property ${i + 1}`,
-  location: `Location ${i + 1}`,
-  price: (i + 1) * 5000,
-  bhk: `${(i % 4) + 1} BHK`,
-  baths: `${(i % 3) + 1}`,
-  sqft: `${(i + 1) * 100}`,
-  amenities: i % 2 === 0 ? ["Gym"] : ["Parking"],
-}));
 
 const ListingsPage = () => {
   const [view, setView] = useState("grid");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOption, setSortOption] = useState("none");
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
     minPrice: "",
     maxPrice: "",
     amenities: [],
     bhk: "",
   });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get("http://localhost:3000/api/v1/property", {
+          withCredentials: true,
+        });
+        if (response.data.success) {
+          setProperties(response.data.properties);
+        } else {
+          setError("Failed to load properties");
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Error fetching properties");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const itemsPerPage = 9;
 
@@ -53,9 +67,12 @@ const ListingsPage = () => {
       const meetsPrice =
         (!minPrice || prop.price >= parseInt(minPrice)) &&
         (!maxPrice || prop.price <= parseInt(maxPrice));
+
       const meetsFacilities =
-      amenities.length === 0 || amenities.every((f) => prop.amenities.includes(f));
-      const meetsBHK = !bhk || prop.bhk === bhk;
+        amenities.length === 0 ||
+        amenities.every((f) => (f === "Gym" ? prop.gym : prop.parking));
+
+      const meetsBHK = !bhk || `${prop.BHK} BHK` === bhk;
       return meetsPrice && meetsFacilities && meetsBHK;
     })
     .sort((a, b) => {
@@ -73,9 +90,7 @@ const ListingsPage = () => {
     <div className="p-4 md:p-6">
       <h1 className="text-3xl font-bold mb-4">Property Listings</h1>
 
-      {/* Search & Sort */}
       <div className="flex flex-col md:flex-row justify-between gap-4 mb-6 border rounded-md p-2">
-        <input type="text" placeholder="Search by location, property name..." className="flex-1 p-2 border rounded-md outline-none" />
         <select className="border p-2 rounded-md" onChange={(e) => handleSort(e.target.value)}>
           <option value="none">Sort by Price</option>
           <option value="asc">Price: Low to High</option>
@@ -85,7 +100,6 @@ const ListingsPage = () => {
       </div>
 
       <div className="flex flex-col md:flex-row">
-        {/* Sidebar Filters */}
         <div className="w-full md:w-1/4 p-4 border rounded-lg mb-6 md:mb-0">
           <h2 className="font-semibold mb-2">Filters</h2>
 
@@ -110,15 +124,18 @@ const ListingsPage = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block font-medium">Required amenities </label>
-            {["Gym", "Parking"].map((type) => (
-              <div key={type} className="flex items-center gap-2">
+            <label className="block font-medium">Required amenities</label>
+            {[
+              { label: "Gym", key: "gym" },
+              { label: "Parking", key: "parking" },
+            ].map((a) => (
+              <div key={a.key} className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  checked={filters.amenities.includes(type)}
-                  onChange={() => handleFilterChange("amenity", type)}
+                  checked={filters.amenities.includes(a.label)}
+                  onChange={() => handleFilterChange("amenity", a.label)}
                 />
-                <span>{type}</span>
+                <span>{a.label}</span>
               </div>
             ))}
           </div>
@@ -139,23 +156,35 @@ const ListingsPage = () => {
           </div>
         </div>
 
-        {/* Listings */}
         <div className="w-full md:w-3/4 px-0 md:px-6">
           <div className="flex justify-between items-center mb-4">
             <p>Showing {currentProperties.length} properties</p>
             <div className="flex gap-2">
-              <FiList className={`cursor-pointer ${view === "list" && "text-gray-400"}`} size={20} onClick={() => setView("list")} />
-              <FiGrid className={`cursor-pointer ${view === "grid" && "text-gray-400"}`} size={20} onClick={() => setView("grid")} />
+              <FiList
+                className={`cursor-pointer ${view === "list" ? "text-gray-400" : ""}`}
+                size={20}
+                onClick={() => setView("list")}
+              />
+              <FiGrid
+                className={`cursor-pointer ${view === "grid" ? "text-gray-400" : ""}`}
+                size={20}
+                onClick={() => setView("grid")}
+              />
             </div>
           </div>
 
-          <div className={`${view === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" : "flex flex-col gap-4"}`}>
+          <div
+            className={`${
+              view === "grid"
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                : "flex flex-col gap-4"
+            }`}
+          >
             {currentProperties.map((property) => (
-              <PropertyCard key={property.id} property={property} view={view} />
+              <PropertyCard key={property._id} property={property} view={view} />
             ))}
           </div>
 
-          {/* Pagination */}
           <div className="flex justify-center items-center gap-2 mt-6">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -169,7 +198,9 @@ const ListingsPage = () => {
               <button
                 key={i + 1}
                 onClick={() => setCurrentPage(i + 1)}
-                className={`px-3 py-2 border rounded-md ${currentPage === i + 1 ? "bg-gray-500 text-white" : ""}`}
+                className={`px-3 py-2 border rounded-md ${
+                  currentPage === i + 1 ? "bg-gray-500 text-white" : ""
+                }`}
               >
                 {i + 1}
               </button>

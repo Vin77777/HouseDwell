@@ -37,22 +37,29 @@ const createInquiry = async (req, res) => {
 
   const getOwnerInquiries = async (req, res) => {
     try {
-      // Step 1: Find all properties of this owner
-      const ownerProperties = await Property.find({ owner: req.user.id }).select("_id");
+      const { propertyId } = req.params;
   
-      const propertyIds = ownerProperties.map(p => p._id);
+      // Step 1: Check if the property 
+      const property = await Property.findOne({ _id: propertyId });
   
-      // Step 2: Find all inquiries related to those properties
-      const inquiries = await Inquiry.find({ property: { $in: propertyIds } })
-        .populate("property", "Address Location price") // Property basic info
-        .populate("user", "username email"); // User basic info
+      if (!property) {
+        return res.status(403).json({
+          success: false,
+          message: "You do not have access to this property or it does not exist.",
+        });
+      }
+  
+      // Step 2: Find inquiries for that specific property
+      const inquiries = await Inquiry.find({ property: propertyId })
+        .populate("property", "Address Location price")
+        .populate("user", "username email");
   
       res.status(200).json({
         success: true,
         inquiries,
       });
     } catch (error) {
-      console.error("Error fetching owner inquiries:", error);
+      console.error("Error fetching property inquiries:", error.message);
       res.status(500).json({
         success: false,
         message: "Server error while fetching inquiries",

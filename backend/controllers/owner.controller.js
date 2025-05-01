@@ -21,43 +21,48 @@ const getAllProperties = async (req, res) => {
 
 // 📍 Add a New Property
 const addProperty = async (req, res) => {
-    const { Address, Location, price, BHK, Area, Image, gym, parking } = req.body;
-  
-    if (!Address || !Location || !price || !BHK || !Area) {
-      return res.status(400).json({
-        success: false,
-        message: "All required fields must be filled, including Image",
-      });
-    }
-  
-    try {
-      const newProperty = await Property.create({
-        Address,
-        Location,
-        price,
-        BHK,
-        Area,
-        Image,        // 📸 set the image
-        gym,
-        parking,
-        owner: req.user.id, // ⭐ Attach owner automatically
-      });
-      
-      console.log(newProperty)
+  const { Address, Location, price, BHK, Area, Image, gym, parking } = req.body;
 
-      res.status(201).json({
-        success: true,
-        message: "Property added successfully",
-        property: newProperty,
-      });
-    } catch (error) {
-      console.error("Error adding property:", error);
-      res.status(500).json({
-        success: false,
-        message: "Server error while adding property",
-      });
+  if (!Address || !Location || !price || !BHK || !Area) {
+    return res.status(400).json({
+      success: false,
+      message: "All required fields must be filled",
+    });
+  }
+
+  try {
+    let imagePath = Image; // default to image URL from form
+    if (req.file) {
+      imagePath = `/uploads/${req.file.filename}`; // if file uploaded
     }
-  };
+
+    const newProperty = await Property.create({
+      Address,
+      Location,
+      price,
+      BHK,
+      Area,
+      Image: imagePath,
+      gym,
+      parking,
+      owner: req.user.id,
+    });
+
+    console.log("new property",newProperty)
+
+    res.status(201).json({
+      success: true,
+      message: "Property added successfully",
+      property: newProperty,
+    });
+  } catch (error) {
+    console.error("Error adding property:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while adding property",
+    });
+  }
+};
 
 //Update Property
 const updateProperty = async (req, res) => {
@@ -125,46 +130,4 @@ const deleteProperty = async (req, res) => {
     }
   };
 
-// Upload property image (Owner only)
-const uploadPropertyImage = async (req, res) => {
-  try {
-    const { propertyId } = req.params; // Get propertyId from URL params
-
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: "No image file uploaded",
-      });
-    }
-
-    const property = await Property.findOne({ _id: propertyId, ownerId: req.user.id });
-
-    if (!property) {
-      return res.status(404).json({
-        success: false,
-        message: "Property not found or you are not the owner",
-      });
-    }
-
-    // Update the image field
-    property.Image = req.file.path; // (Field should match your Property schema field 'Image')
-
-    await property.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Image uploaded successfully",
-      property,
-    });
-
-  } catch (error) {
-    console.error("Error uploading image:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server Error",
-    });
-  }
-};
-  
-
-export { getAllProperties, addProperty, updateProperty, deleteProperty,uploadPropertyImage };
+export { getAllProperties, addProperty, updateProperty, deleteProperty };

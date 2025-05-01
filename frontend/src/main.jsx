@@ -21,15 +21,15 @@ import PropertyDetail from './pages/PropertyDetail.jsx';
 // Import missing owner route components
 import OwnerLayout from './owner/OwnerLayout.jsx';
 import Dashboard from './owner/Dashboard.jsx';
-// import AddProperty from './owner/AddProperty.jsx';
+import Addproperty from './owner/Addproperty.jsx';
 // import EditProperty from './owner/EditProperty.jsx';
-import PropertyDetails from './owner/PropertyDetails.jsx';
+import InquiryDetails from './owner/InquiryDetails.jsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path="/" element={<App />}>
-        <Route index element={<Home />} />
+        <Route path="" element={<Home />} />
         <Route path="listings" element={<ListingsPage />} />
         <Route path="property/:id" element={<PropertyDetail />} />
         <Route path="predict" element={<PricePrediction />} />
@@ -42,9 +42,9 @@ const router = createBrowserRouter(
 
       <Route path="/owner" element={<OwnerLayout />}>
         <Route path="dashboard" element={<Dashboard />} />
-        {/* <Route path="add-property" element={<AddProperty />} />
-        <Route path="edit/:id" element={<EditProperty />} /> */}
-        <Route path="property/:id" element={<PropertyDetails />} />
+        <Route path="add-property" element={<Addproperty />} />
+        {/* <Route path="edit/:id" element={<EditProperty />} /> */}
+        <Route path="inquiry/:id" element={<InquiryDetails />} />
       </Route>
     </>
   )

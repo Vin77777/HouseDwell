@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Login = () => {
@@ -25,31 +25,38 @@ const Login = () => {
         "http://localhost:3000/api/v1/users/login",
         formData,
         { 
-          withCredentials: true //important for cookie to be saved
+          withCredentials: true, //important for cookie to be saved
         }
       );
 
       const data = response.data;
-      console.log(data);
+      console.log(data.success);
 
-      if (data.success) {
+      if (data.success){
+        console.log(data);
         alert(data.message);
 
         // Optionally store user info locally (not token, token is cookie now)
-        localStorage.setItem("userInfo", JSON.stringify(data.user));
+        if (data.user.role === "owner") {
+          localStorage.setItem("ownerInfo", JSON.stringify(data.user));
+        }
+        else{
+          localStorage.setItem("userInfo", JSON.stringify(data.user));
+          
+        }
 
         // Redirect based on role
         if (data.user.role === "owner") {
-          navigate("/owner/dashboard");
+          navigate("/owner");
         } else {
+          window.location.href = "/";
           navigate("/");
         }
-      } else {
-        setBackendMessage(data.message);
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert("Server error during login");
+      const message = error.response?.data?.message || "Server error during login";
+      setBackendMessage(message);
     }
   };
 
@@ -87,6 +94,11 @@ const Login = () => {
             Login
           </button>
         </form>
+
+        <div className="mt-3">
+          <p>Don't have a account ? <span className="text-blue-500"><Link to="/Signup">Sign-up</Link></span></p>
+        </div>
+
         {backendMessage && (
           <h1 className="text-red-500 text-center font-medium text-[15px] p-1.5">
             {backendMessage}

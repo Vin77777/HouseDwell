@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/create/:propertyId", isLoggedIn, authorizeRoles("user"), createInquiry);
 
 // Owner views inquiries
-router.get("/owner/inquiries", isLoggedIn, authorizeRoles("owner"), getOwnerInquiries);
+router.get("/owner/inquiries/:propertyId", isLoggedIn, authorizeRoles("owner"), getOwnerInquiries);
 
 export default router;
 

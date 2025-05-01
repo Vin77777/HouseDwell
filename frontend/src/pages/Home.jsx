@@ -1,5 +1,6 @@
 import { useState } from "react";
-import propertyCard from "../components/PropertyCard"
+import propertyCard from "../components/PropertyCard";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 const Home = () => {
   const [location, setLocation] = useState("");
   const [priceRange, setPriceRange] = useState(5000);
@@ -103,11 +104,14 @@ const Home = () => {
       <section className="mt-10 text-center bg-gray-100 p-6 rounded-lg">
         <h2 className="text-xl font-bold">Predict Your House Price</h2>
         <p className="text-gray-600 mt-2">
-          Use our AI-powered tool to get an estimate of your property’s value.
+          Use our ML-powered tool to get an estimate of your property’s value.
         </p>
-        <button className="mt-4 bg-black text-white px-6 py-2 rounded-md">
-          Predict House Price
-        </button>
+        <Link to="/predict">
+          <button className="mt-4 bg-black text-white px-6 py-2 rounded-md cursor-pointer">
+            Predict House Price
+          </button>
+        </Link>
+
       </section>
     </div>
   );
