@@ -36,10 +36,32 @@ const Dashboard = () => {
     navigate(`/owner/inquiry/${id}`);
   };
 
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Do you want to remove this property?")) {
+      try {
+        const response = await axios.delete(
+          `http://localhost:3000/api/v1/owner/property/delete/${id}`,
+          {
+            withCredentials: true,
+          }
+        );
+        if (response.data.success) {
+          alert(response.data.message);
+          // Refresh the property list without reloading the page
+          fetchProperties();
+        }
+      } catch (error) {
+        console.error("Error deleting property:", error);
+        alert("Failed to remove property.");
+      }
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto py-10 px-4">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-indigo-700">My Properties</h1>
+        <h1 className="text-3xl font-bold text-indigo-700">Dashboard</h1>
         <Link
           to="/owner/add-property"
           className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
@@ -75,7 +97,7 @@ const Dashboard = () => {
                   
                   <button
                     onClick={() => handleDelete(prop._id)}
-                    className="text-red-600"
+                    className="text-red-600 cursor-pointer"
                   >
                     Delete
                   </button>

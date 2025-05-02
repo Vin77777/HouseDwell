@@ -6,7 +6,6 @@ import upload from "../middleware/upload.js";
 const router = express.Router();
 
 router.get("/properties", isLoggedIn, authorizeRoles("owner"), getAllProperties);
-// router.post("/property/create", isLoggedIn, authorizeRoles("owner"), addProperty);
 router.put("/property/edit/:id", isLoggedIn, authorizeRoles("owner"), updateProperty);
 router.delete("/property/delete/:id", isLoggedIn, authorizeRoles("owner"), deleteProperty);
 // Owner uploading image to a specific property

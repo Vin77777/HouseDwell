@@ -93,7 +93,7 @@ const PropertyDetail = () => {
         <div className="flex-1">
           <img
             src={
-              Image.startsWith("http")
+              Image.startsWith("https")
               ? Image
               : `http://localhost:3000${Image}`
           }

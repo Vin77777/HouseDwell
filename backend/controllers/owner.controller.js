@@ -22,7 +22,7 @@ const getAllProperties = async (req, res) => {
 // 📍 Add a New Property
 const addProperty = async (req, res) => {
   const { Address, Location, price, BHK, Area, Image, gym, parking } = req.body;
-
+  console.log(price, BHK, Area, Image)
   if (!Address || !Location || !price || !BHK || !Area) {
     return res.status(400).json({
       success: false,
@@ -31,9 +31,16 @@ const addProperty = async (req, res) => {
   }
 
   try {
-    let imagePath = Image; // default to image URL from form
+    let imagePath = "";
     if (req.file) {
-      imagePath = `/uploads/${req.file.filename}`; // if file uploaded
+      imagePath = `/uploads/${req.file.filename}`;
+    } else if (Image && Image.startsWith("http")) {
+      imagePath = Image;
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid image URL or file not uploaded",
+      });
     }
 
     const newProperty = await Property.create({

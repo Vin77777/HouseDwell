@@ -9,7 +9,7 @@ const Signup = () => {
     username: "",
     email: "",
     password: "",
-    role: "user", // default value
+    role: "user", 
   });
 
   const [backendMessage, setBackendMessage] = useState(null);

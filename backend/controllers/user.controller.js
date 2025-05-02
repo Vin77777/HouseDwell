@@ -35,10 +35,6 @@ const registerUser = async (req, res) => {
         message: "User not registered",
       });
     }
-
-    const token = crypto.randomBytes(32).toString("hex");
-    user.verificationToken = token;
-
     await user.save();
 
     return res.status(201).json({
@@ -63,7 +59,7 @@ const login = async (req, res) => {
       message: "All fields are required",
     });
   }
-
+  
   try {
     const user = await User.findOne({ email });
 
