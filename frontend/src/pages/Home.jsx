@@ -1,6 +1,7 @@
 import { useState } from "react";
 import propertyCard from "../components/PropertyCard";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+
 const Home = () => {
   const [location, setLocation] = useState("");
   const [priceRange, setPriceRange] = useState(5000);
@@ -44,39 +45,9 @@ const Home = () => {
   return (
     <div className="-w-6xl mx-auto p-6">
       {/* Hero Section */}
-      <div className="relative text-center bg-gray-200 py-20 rounded-md">
-        <h1 className="text-3xl font-bold text-gray-900">Find Your Perfect Home</h1>
+      <div className="text-center py-20 rounded-md border-2 border-black">
+        <h1 className="text-3xl font-bold">Find Your Perfect Home</h1>
         <p className="text-gray-600 mt-2">Discover thousands of rental properties in your area.</p>
-
-        {/* Search Bar */}
-        {/* <div className="mt-6 flex items-center bg-white p-4 rounded-lg shadow-md space-x-4">
-          <input
-            type="text"
-            placeholder="Location"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="border p-2 flex-grow rounded-md"
-          />
-          <input
-            type="range"
-            min="0"
-            max="5000"
-            value={priceRange}
-            onChange={(e) => setPriceRange(e.target.value)}
-            className="cursor-pointer"
-          />
-          <select
-            className="border p-2 rounded-md"
-            value={bhk}
-            onChange={(e) => setBhk(e.target.value)}
-          >
-            <option value="">BHK</option>
-            <option value="1">1 BHK</option>
-            <option value="2">2 BHK</option>
-            <option value="3">3 BHK</option>
-          </select>
-          <button className="bg-black text-white px-4 py-2 rounded-md">Search</button>
-        </div> */}
       </div>
 
       {/* Featured Listings */}
@@ -85,7 +56,14 @@ const Home = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {featuredListings.map((listing, index) => (
             <div key={index} className="bg-white p-4 rounded-lg shadow-md">
-              <div className="bg-gray-200 h-32 rounded-md mb-4"></div>
+              <div className="bg-gray-200 h-32 rounded-md mb-4 overflow-hidden">
+                <img
+                  src="https://images.pexels.com/photos/186077/pexels-photo-186077.jpeg?auto=compress&cs=tinysrgb&w=600"
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
               <h3 className="font-semibold">{listing.title}</h3>
               <p className="text-gray-500 text-sm">{listing.location}</p>
               <p className="font-bold mt-2">{listing.price}</p>
@@ -111,7 +89,6 @@ const Home = () => {
             Predict House Price
           </button>
         </Link>
-
       </section>
     </div>
   );

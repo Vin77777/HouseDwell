@@ -48,15 +48,15 @@ const About = () => {
             </div>
             <div className="bg-gray-100 p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-bold mt-3">Heet Nandu</h3>
-              <p className="text-gray-500">Frontend Devloper</p>
+              <p className="text-gray-500">Backend Developer</p>
             </div>
             <div className="bg-gray-100 p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-bold mt-3">Sourav mandal</h3>
-              <p className="text-gray-500">Backend + ML</p>
+              <p className="text-gray-500">Frontend Developer</p>
             </div>
             <div className="bg-gray-100 p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-bold mt-3">Vinit Prajapati</h3>
-              <p className="text-gray-500">Backend + ML</p>
+              <p className="text-gray-500">Frontend Developer + ML</p>
             </div>
           </div>
         </section>
