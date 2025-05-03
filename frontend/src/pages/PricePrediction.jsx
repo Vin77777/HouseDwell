@@ -150,9 +150,7 @@ const PricePrediction = () => {
           </div>
 
           {/* Buttons */}
-          <div className="mt-6 flex justify-center space-x-4">
-            <button className="bg-black text-white px-4 py-2 rounded cursor-pointer">View Similar Properties</button>
-          </div>
+          
         </div>
       )}
     </div>
